@@ -16,10 +16,10 @@ public class CommandShoot extends CommandBase{
         c_controller = controller;
         addRequirements(c_hazyShooter);
     }
-
+    
     @Override
     public void execute(){
-        c_hazyShooter.shooterSpit(-c_controller.getRightTriggerAxis());
+        c_hazyShooter.stopShooter();
         //System.out.println("Pressed Shooter Spit");
     }
 

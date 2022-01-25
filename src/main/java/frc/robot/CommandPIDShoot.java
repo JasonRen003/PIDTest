@@ -28,12 +28,12 @@ public class CommandPIDShoot extends CommandBase{
 
     @Override
     public void execute(){
-        c_hazyShooter.shooterSpit(-c_controller.getRightTriggerAxis());
+        c_hazyShooter.shooterSpit();
         //System.out.println("Pressed Shooter Spit");
     }
 
     // @Override
-    // protected boolean isFinished(){
+    // public boolean isFinished(){
     //     return true;
     // }
 

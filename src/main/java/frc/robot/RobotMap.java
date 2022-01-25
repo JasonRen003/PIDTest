@@ -51,7 +51,7 @@ public class RobotMap { //Static port variables
 
     //Shooter
     public static final int SHOOTERTALONPORT = 12;
-    public static final double SHOOTERSETPOINT = 3000;
+    public static final double SHOOTERSETPOINT = 5600;
     
     //IMU
     public static final int PIGEONIMU = 0;

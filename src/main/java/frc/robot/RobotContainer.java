@@ -16,20 +16,26 @@ public class RobotContainer {
     //Chassis subystem and command setup
     HazyMechBase hazyMechBase = new HazyMechBase();
     HazyShooter hazyShooter = new HazyShooter();
+    HazyHighFeeder hazyHighFeeder = new HazyHighFeeder();
     CommandMecanum commandMecanum = new CommandMecanum(hazyMechBase, leftJoystick, rightJoystick);
     CommandShoot commandShoot = new CommandShoot(hazyShooter,hazyController);
     CommandPIDShoot commandPIDShoot = new CommandPIDShoot(hazyShooter, hazyController);
-    public RobotContainer(){
+    CommandHighFeedDefault commandHighFeedDefault = new CommandHighFeedDefault(hazyHighFeeder);
+    CommandSpitHighFeed commandSpitHighFeed = new CommandSpitHighFeed(hazyHighFeeder);
 
+    public RobotContainer(){
         configureButtonBindings();
         hazyMechBase.setDefaultCommand(commandMecanum);
-        //hazyShooter.setDefaultCommand(commandShoot);
-        
+        hazyShooter.setDefaultCommand(commandShoot);
+        hazyHighFeeder.setDefaultCommand(commandHighFeedDefault);
     }
 
     //Use this method to define button->command mappings
     private void configureButtonBindings(){
-        new JoystickButton(hazyController, Button.kA.value).whenPressed(commandPIDShoot);
+
+        new JoystickButton(hazyController, Button.kA.value).toggleWhenPressed(commandPIDShoot);
+        new JoystickButton(hazyController, Button.kB.value).whenHeld(commandSpitHighFeed);
+
     } 
 
 

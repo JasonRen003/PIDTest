@@ -92,7 +92,7 @@ public class HazyMechBase extends SubsystemBase{
       //System.out.println(speed);
       //SmartDashboard.putNumber("Speed", speed);
       //SmartDashboard.putNumber("Voltage", volts);
-      System.out.println((double)Math.round(speed*100)/100 + ", " + (double)Math.round(volts*100)/100);
+      //System.out.println((double)Math.round(speed*100)/100 + ", " + (double)Math.round(volts*100)/100);
     }
     
 }
