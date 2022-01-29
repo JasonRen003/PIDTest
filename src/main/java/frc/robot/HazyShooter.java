@@ -15,7 +15,7 @@ public class HazyShooter extends SubsystemBase {
 
     private static TalonSRX shooterTalon;
     
-
+    //Constructor includes PID value setup for motors and initialization of all motors in subsystem
     public HazyShooter(){
         shooterTalon = new TalonSRX(RobotMap.SHOOTERTALONPORT);
         shooterTalon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);

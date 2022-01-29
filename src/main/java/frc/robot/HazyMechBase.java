@@ -19,7 +19,7 @@ public class HazyMechBase extends SubsystemBase{
     private TalonSRX leftBackTalon;
     private TalonSRX rightBackTalon;
     
-    
+    //Constructor includes PID (if necessary) value setup for motors and initialization of all motors in subsystem
     public HazyMechBase(){
       rightFrontTalon = new TalonSRX(RobotMap.RIGHTFRONTTALONPORT);
       leftBackTalon = new TalonSRX(RobotMap.LEFTBACKTALONPORT);
@@ -28,6 +28,8 @@ public class HazyMechBase extends SubsystemBase{
       leftFrontTalon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     }
 
+    //A Necessary setup function for drive cartesian
+    //Sets a max speed value that the wheels can't exceed
     protected void normalize(double[] wheelSpeeds) {
       double maxMagnitude = Math.abs(wheelSpeeds[0]);
       
@@ -45,6 +47,7 @@ public class HazyMechBase extends SubsystemBase{
       }
     }
 
+    //Setup function for DriveCartesian
     private double applyDeadband(double value, double deadband) {
       if (Math.abs(value) > deadband) {
         if (value > 0.0) 
@@ -56,6 +59,8 @@ public class HazyMechBase extends SubsystemBase{
         return 0.0;
     }
 
+
+    //Mecanum drive function that is called by the default 
     public void driveCartesian(double x, double y, double angle){
       
         y = MathUtil.clamp(y, -1.0, 1.0);
@@ -78,9 +83,10 @@ public class HazyMechBase extends SubsystemBase{
         rightBackTalon.set(ControlMode.PercentOutput, -wheelSpeeds[3]*-1);
     }
 
+    //Get's Talon speed from encoder
     private double getSpeed(TalonSRX tally){
-      double gearRatio = (1/13.2);
-      double rotations = tally.getSelectedSensorVelocity() * (10.0/4096.0) * gearRatio * 60.0;
+      double gearRatio = (1/13.2); 
+      double rotations = tally.getSelectedSensorVelocity() * (10.0/4096.0) * gearRatio * 60.0; //Get selectedSensorVelocity returns in encoder ticks per 100ms, we need to use dimensional analysis to convert that to rpm (4096 encoder ticks per rotation for talons)
       double wheelradius = 0.25; //in feet
       double velocity = rotations * 2.0*Math.PI*wheelradius / 60.0;
       return velocity;

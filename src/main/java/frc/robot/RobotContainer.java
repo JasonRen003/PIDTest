@@ -3,13 +3,11 @@ package frc.robot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import static edu.wpi.first.wpilibj.XboxController.Button;
 public class RobotContainer {
 
     //Robot's controllers that drivers use
     XboxController hazyController = new XboxController(RobotMap.CONTROLLERPORT);
-    Trigger hazyTriggers = new Trigger();
     Joystick leftJoystick = new Joystick(RobotMap.LEFTJOYSTICKPORT);
     Joystick rightJoystick = new Joystick(RobotMap.RIGHTJOYSTICKPORT);
 
@@ -23,6 +21,8 @@ public class RobotContainer {
     CommandHighFeedDefault commandHighFeedDefault = new CommandHighFeedDefault(hazyHighFeeder);
     CommandSpitHighFeed commandSpitHighFeed = new CommandSpitHighFeed(hazyHighFeeder);
 
+    //set default commands inside RobotContainer constructor
+    //This constructor is called once in Robotinit and should set up all button-> command bindings and default commands
     public RobotContainer(){
         configureButtonBindings();
         hazyMechBase.setDefaultCommand(commandMecanum);
