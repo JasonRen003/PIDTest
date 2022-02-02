@@ -13,14 +13,6 @@ public class CommandSpitHighFeed extends CommandBase {
     }
 
     public void execute(){
-        c_hazyHighFeeder.swallow();
+        c_hazyHighFeeder.spit();
     }
-
-    // @Override
-    // protected boolean isFinished(){
-    //     return false;
-    // }
-
-    // @Override
-    // protected void interrupted(){}
 }

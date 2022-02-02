@@ -95,6 +95,7 @@ public class Robot extends TimedRobot {
     hazyMechBase.getGraph();
     hazyShooter.getSpeed();
     SmartDashboard.putNumber("RPM", hazyShooter.getShooterRPM());
+    robotContainer.DPadWrapper();
   }
 
   /** This function is called once when the robot is disabled. */
