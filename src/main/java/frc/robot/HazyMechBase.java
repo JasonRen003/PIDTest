@@ -6,9 +6,12 @@ import edu.wpi.first.math.MathUtil;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import edu.wpi.first.wpilibj.shuffleboard.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj.SerialPort;
 
 
 
@@ -18,6 +21,17 @@ public class HazyMechBase extends SubsystemBase{
     private TalonSRX leftFrontTalon;
     private TalonSRX leftBackTalon;
     private TalonSRX rightBackTalon;
+
+    private Solenoid solenoidToLight;
+
+    private SerialPort visionPort;
+
+    private double offset; 
+    private boolean delayed;
+    private boolean turnDelay;
+    private double distance;
+    private double milStart;
+    private double lastData;
     
     //Constructor includes PID (if necessary) value setup for motors and initialization of all motors in subsystem
     public HazyMechBase(){
@@ -26,6 +40,8 @@ public class HazyMechBase extends SubsystemBase{
       leftFrontTalon = new TalonSRX(RobotMap.LEFTFRONTTALONPORT);
       rightBackTalon = new TalonSRX(RobotMap.RIGHTBACKTALONPORT);
       leftFrontTalon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+
+      solenoidToLight = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
     }
 
     //A Necessary setup function for drive cartesian
@@ -100,5 +116,98 @@ public class HazyMechBase extends SubsystemBase{
       //SmartDashboard.putNumber("Voltage", volts);
       //System.out.println((double)Math.round(speed*100)/100 + ", " + (double)Math.round(volts*100)/100);
     }
+
+    public void goToTarget(){
+      solenoidToLight.set(true);
+
+      if (delayed){
+        milStart = java.lang.System.currentTimeMillis();
+        delayed = false;
+      }
+      if(java.lang.System.currentTimeMillis() > milStart + RobotMap.VISIONDELAY){
+        double travelDistance;
+        if(distance == -1.0)
+          travelDistance = 0.0;
+        else
+          travelDistance = RobotMap.SHOOTDISTANCE - distance;
+        //System.out.println(java.lang.System.currentTimeMillis()-lastData);
+        double turnPower = clamp(RobotMap.VISIONTURN * offset);
+        if(turnPower > -0.105 && turnPower < 0.0 && Math.abs(offset) >= 10.0)
+          turnPower = -0.105;
+        else if(turnPower < 0.105 && turnPower > 0.0 && Math.abs(offset) >= 10.0)
+          turnPower = 0.105;
+        
+        if(Math.abs(offset) < 10.0)
+          turnPower = 0.0;
+        
+        double forwardPower =clamp( -travelDistance*RobotMap.VISIONSPEED);
+        System.out.println("turn: " + turnPower + " forward: " + forwardPower);
+        driveCartesian(0, -forwardPower, -turnPower);
+      }
+    }
+
+    public void turnToTarget(){
+      solenoidToLight.set(true);
+      // rightFrontTalon.config_kP(0, RobotMap.DRIVEP, 30);
+      // rightBackTalon.config_kP(0, RobotMap.DRIVEP, 30);
+      // leftFrontTalon.config_kP(0, RobotMap.DRIVEP, 30);
+      // leftBackTalon.config_kP(0, RobotMap.DRIVEP, 30);
+      // leftBackTalon.selectProfileSlot(slotIdx, pidIdx);
+      if (delayed){
+        milStart = java.lang.System.currentTimeMillis();
+        delayed = false;
+      }
+      if(java.lang.System.currentTimeMillis() > milStart + RobotMap.VISIONDELAY){
+        double turnPower = RobotMap.VISIONVELTURN * (offset-RobotMap.RIGHTSIDEOFFSET);
+        rightFrontTalon.set(ControlMode.Velocity,turnPower);
+        rightBackTalon.set(ControlMode.Velocity,turnPower);
+        leftFrontTalon.set(ControlMode.Velocity,turnPower);
+        leftBackTalon.set(ControlMode.Velocity,turnPower);
+      }
+    }
+
+    public void toggleDelayed(){
+      delayed = true;
+    }
+
+    public void toggleTurnDelay(){
+      turnDelay = true;
+    }
+
+    public void readData(){
+      String data = visionPort.readString();
+      
+      //System.out.println(data);
+      if(data.equals("none")){
+        offset = 0.0;
+        distance = -1.0;
+      }
+      if(!data.equals("") && !data.equals("none")){
+        try{
+        offset = Double.parseDouble(data.substring(8,data.indexOf("distance")));
+        distance = Double.parseDouble(data.substring(data.indexOf("distance")+10));
+        if(distance > 2000)
+          distance = -1;   
+        
+        
+        else{
+          lastData = java.lang.System.currentTimeMillis();
+        }
+      }
+        catch (Exception e){
+          e.printStackTrace();
+        }
+      }
+        
+    }
+
+    private double clamp(double input){
+      if(input>RobotMap.MAXVISIONSPEED)
+        return RobotMap.MAXVISIONSPEED; 
+      else if (input < -RobotMap.MAXVISIONSPEED)
+        return -RobotMap.MAXVISIONSPEED;
+      return input;
+    }
+
     
 }
